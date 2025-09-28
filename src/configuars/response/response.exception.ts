@@ -7,7 +7,7 @@ export class ResponseException extends HttpException {
     status = false,
     statusCode: number = HttpStatus.BAD_REQUEST,
     data: any = null,
-    error?: any,                
+    error?: string,
   ) {
     super(
       {
@@ -15,10 +15,7 @@ export class ResponseException extends HttpException {
         message,
         data,
         statusCode,
-        error:
-          typeof error === 'string'
-            ? error
-            : error?.details || error?.message || null, 
+        error: error,
       },
       statusCode,
     );

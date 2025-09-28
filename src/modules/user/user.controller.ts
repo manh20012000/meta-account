@@ -9,6 +9,7 @@ import {
   Put,
   HttpStatus,
   Res,
+  Delete,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 
@@ -21,7 +22,7 @@ import {
   SearchUserDto,
 } from './dto/create-user.dto';
 
-import { ResponseException } from 'src/commons/response/response.exception';
+import { ResponseException } from 'src/configuars/response/response.exception';
 import { Response } from 'express'; // For setting cookies if needed
 
 @Controller('users')
@@ -32,7 +33,6 @@ export class UserController {
   async register(@Body() createUserDto: CreateUserDto, @Res() res: Response) {
     try {
       const savedUser = await this.userService.register(createUserDto);
-      // Note: No tokens in register, as per original
       return res.status(HttpStatus.CREATED).json({
         message: 'Registration successful',
         data: {
@@ -186,7 +186,6 @@ export class UserController {
 
   @Post('forget-password')
   async forgetPassword(@Body() body: { phone: string }) {
-    // Adapt for phone/email
     try {
       const result = await this.userService.forgetPassword(body.phone);
       return {
@@ -227,6 +226,31 @@ export class UserController {
       }
       throw new ResponseException(
         'Failed to set FCM token',
+        false,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        null,
+        error.message,
+      );
+    }
+  }
+
+  @Delete(':id/fcm-token')
+  async removeFcmToken(@Param('id') id: string, @Body() fcmTokenDto: FcmTokenDto) {
+    try {
+      await this.userService.removeFcmToken(id, fcmTokenDto);
+      return {
+        message: 'FCM token removed successfully',
+        data: { userId: id },
+        status: true,
+        statusCode: HttpStatus.OK,
+      };
+    } catch (error) {
+      console.log(error.message, 'error with remove fcm token');
+      if (error instanceof ResponseException) {
+        throw error;
+      }
+      throw new ResponseException(
+        'Failed to remove FCM token',
         false,
         HttpStatus.INTERNAL_SERVER_ERROR,
         null,

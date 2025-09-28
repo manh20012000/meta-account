@@ -9,6 +9,7 @@ import { MinioModule } from './configuars/minio/minio.module';
 import { UserModule } from './modules/user/user.module';
 import { User } from './modules/user/user.entity';
 import { createDataSource } from './database/data-source';
+import { ElasticsModule } from './configuars/elasticsearch/elasticsearch.module';
 
 @Module({
   imports: [
@@ -20,17 +21,17 @@ import { createDataSource } from './database/data-source';
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
       useFactory: async () => {
-        const ds = createDataSource(); 
+        const ds = createDataSource();
         return {
           ...(ds.options as any),
           // entities: [User],
-      
         };
       },
     }),
     AppRabbitmqModule,
     MinioModule,
     RedisModule,
+    ElasticsModule,
     UserModule,
   ],
 })

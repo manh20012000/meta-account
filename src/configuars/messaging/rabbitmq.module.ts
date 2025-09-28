@@ -13,7 +13,7 @@ import { RabbitmqService } from './rabbitmq.service';
         const exchange = cfg.get<string>('rabbitmq.exchange') ?? 'meta_user_exchange';
         return {
           uri,
-          exchanges: [{ name: exchange, type: 'topic' }],
+          exchanges: [{ name: exchange, type: 'topic' ,options: { durable: true }}],  
           connectionInitOptions: { wait: true, timeout: 10000 },
         };
       },

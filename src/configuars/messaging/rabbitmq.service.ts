@@ -12,7 +12,9 @@ export class RabbitmqService {
     private readonly cfg: ConfigService,
   ) {
     this.exchange =
-      this.cfg.get<string>('rabbitmq.exchange') ?? 'meta_user_exchange';
+      this.cfg.get<string>('userRabbitmq.exchange') ??
+      this.cfg.get<string>('rabbitmq.exchange') ??
+      'meta_user_exchange';
   }
 
   async publish(routingKey: string, payload: unknown) {

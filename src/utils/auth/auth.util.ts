@@ -21,20 +21,15 @@ export async function generateAccessToken(
   try {
     const jwtSecret = configService.get('JWT_SECRET') || 'your-secret-key';
     const token = jwt.sign({ userId: userInfo._id }, jwtSecret, {
-      expiresIn: '48h', // 48 hours as per original
+      expiresIn: '72h', // 72 hours as per original
     });
 
     // Lưu token vào Redis với prefix user:${token} và data là { id, name, avatar }
-    const ttl = 48 * 60 * 60 * 1000; // 48 hours in ms
-    await redisService.set(
-      `user:${token}`,
-      {
-        _id: userInfo._id, // Sửa: dùng 'id' thay vì '_id' để nhất quán
-        name: userInfo.name,
-        avatar: userInfo.avatar,
-      },
-      ttl,
-    );
+    await redisService.set(`user:${token}`, {
+      _id: userInfo._id, // Sửa: dùng 'id' thay vì '_id' để nhất quán
+      name: userInfo.name,
+      avatar: userInfo.avatar,
+    });
 
     return token;
   } catch (error) {
@@ -62,8 +57,8 @@ export async function generateRefreshToken(
     const ttl = 15 * 24 * 60 * 60 * 1000; // 15 days in ms
     await redisService.set(
       `user:${token}`,
-      { 
-        _id: userInfo._id, // Sửa: dùng 'id' thay vì '_id' để nhất quán   
+      {
+        _id: userInfo._id, // Sửa: dùng 'id' thay vì '_id' để nhất quán
         name: userInfo.name,
         avatar: userInfo.avatar,
       },

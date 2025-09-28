@@ -8,34 +8,38 @@ import {
   DeleteDateColumn,
 } from 'typeorm';
 
+export type Gender = 'male' | 'female' | 'other' | 'unknown';
+export type UserRole = 'user' | 'admin' | 'moderator';
+export type UserStatus = 'active' | 'inactive' | 'banned';
+
 @Entity({ name: 'users' })
 export class User {
   @PrimaryGeneratedColumn('uuid')
   _id!: string;
 
-  @Index({ unique: true })
-  @Column({ type: 'varchar', length: 150 })
-  email!: string;
+  @Column({ type: 'varchar', length: 150, nullable: true })
+  email?: string | null;
 
-  // Nếu vẫn giữ tên 'password', hãy chắc chắn service luôn xử lý hash ở đây
-  @Column({ type: 'varchar', length: 120 })
+  @Column({ type: 'varchar', length: 150, nullable: true })
+  phone?: string | null;
+
+  @Column({ type: 'varchar', length: 120, nullable: false })
   password!: string;
 
   @Column({ type: 'varchar', length: 80, nullable: true })
-  firstName?: string;
+  firstName?: string | null;
 
   @Column({ type: 'varchar', length: 80, nullable: true })
-  lastName?: string;
+  lastName?: string | null;
 
   @Column({ type: 'varchar', length: 160, nullable: true })
-  name?: string;
+  name?: string | null;
 
-  // đổi type TS cho khớp cột 'date'
   @Column({ type: 'date', nullable: true })
   birthday?: Date | null;
 
   @Column({ type: 'varchar', length: 10, default: 'unknown' })
-  gender!: 'male' | 'female' | 'other' | 'unknown';
+  gender!: Gender;
 
   @Column({ type: 'text', nullable: true })
   avatar?: string | null;
@@ -44,12 +48,12 @@ export class User {
   isVerified!: boolean;
 
   @Column({ type: 'varchar', length: 20, default: 'user' })
-  role!: 'user' | 'admin' | 'moderator';
+  role!: UserRole;
 
-  @Column('text', { array: true, default: () => "'{}'" })
+  @Column('text', { array: true, default: () => 'ARRAY[]::text[]' })
   friends!: string[];
 
-  @Column('text', { array: true, default: () => "'{}'" })
+  @Column('text', { array: true, default: () => 'ARRAY[]::text[]' })
   requests!: string[];
 
   @Column({ type: 'integer', default: 0 })
@@ -57,13 +61,13 @@ export class User {
 
   @Index()
   @Column({ type: 'varchar', length: 20, default: 'active' })
-  status!: 'active' | 'inactive' | 'banned';
+  status!: UserStatus;
 
   @CreateDateColumn({ type: 'timestamptz' })
-  createdAt!: Date;
+  createdAt!: Date; // DB tự default now()
 
   @UpdateDateColumn({ type: 'timestamptz' })
-  updatedAt!: Date;
+  updatedAt!: Date; // DB tự update now()
 
   @DeleteDateColumn({ type: 'timestamptz', nullable: true })
   deletedAt?: Date | null;
