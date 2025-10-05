@@ -6,10 +6,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppRabbitmqModule } from './configuars/messaging/rabbitmq.module';
 import { RedisModule } from './configuars/redis/redis.module';
 import { MinioModule } from './configuars/minio/minio.module';
-import { UserModule } from './modules/user/user.module';
-import { User } from './modules/user/user.entity';
+import { AuthModule } from './modules/auth/auth.module';
+import { User } from './models/user.entity';
 import { createDataSource } from './database/data-source';
 import { ElasticsModule } from './configuars/elasticsearch/elasticsearch.module';
+import { FriendUserModule } from './modules/friends/friend.module';
+import { UserModule } from './modules/user/user.module';
 
 @Module({
   imports: [
@@ -32,6 +34,8 @@ import { ElasticsModule } from './configuars/elasticsearch/elasticsearch.module'
     MinioModule,
     RedisModule,
     ElasticsModule,
+    AuthModule,
+    FriendUserModule,
     UserModule,
   ],
 })

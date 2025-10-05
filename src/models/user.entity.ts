@@ -8,7 +8,7 @@ import {
   DeleteDateColumn,
 } from 'typeorm';
 
-export type Gender = 'male' | 'female' | 'other' | 'unknown';
+export type Gender = 'Nữ' | 'Nam' | 'other';
 export type UserRole = 'user' | 'admin' | 'moderator';
 export type UserStatus = 'active' | 'inactive' | 'banned';
 
@@ -22,6 +22,9 @@ export class User {
 
   @Column({ type: 'varchar', length: 150, nullable: true })
   phone?: string | null;
+
+  @Column({ type: 'varchar', length: 150, nullable: true })
+  countryCode?: string | null;
 
   @Column({ type: 'varchar', length: 120, nullable: false })
   password!: string;
@@ -39,7 +42,7 @@ export class User {
   birthday?: Date | null;
 
   @Column({ type: 'varchar', length: 10, default: 'unknown' })
-  gender!: Gender;
+  gender!: string;
 
   @Column({ type: 'text', nullable: true })
   avatar?: string | null;

@@ -4,7 +4,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Client } from '@elastic/elasticsearch';
 import { ElasticsearchModule } from '@nestjs/elasticsearch';
 
-import { UserElasticsearchchService } from './user-search.service';
+import { UserElasticsearchService } from './user-search.service';
 
 @Module({
   imports: [
@@ -15,18 +15,18 @@ import { UserElasticsearchchService } from './user-search.service';
       useFactory: (cfg: ConfigService) => {
         const node = cfg.get<string>('elasticsearch.node'); // ví dụ: https://<host>:9200
         const username = cfg.get<string>('elasticsearch.username');
-        const password = cfg.get<string>('elasticsearch.password');
+        const apiKey = cfg.get<string>('elasticsearch.api_key');
         if (!node) throw new Error('Missing es.node');
 
         return {
           node,
-          auth: username && password ? { username, password } : undefined,
+          auth: apiKey ? { apiKey } : undefined,
           // tls: { rejectUnauthorized: false },
         };
       },
     }),
   ],
-  providers: [UserElasticsearchchService],
-  exports: [UserElasticsearchchService],
+  providers: [UserElasticsearchService],
+  exports: [UserElasticsearchService],
 })
 export class ElasticsModule {}

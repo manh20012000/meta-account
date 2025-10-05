@@ -16,10 +16,11 @@ export const createDataSource = () => {
     password: process.env.DATABASE_PASSWORD,
     database: process.env.DATABASE_NAME,
     schema: process.env.DATABASE_SCHEMA || 'user',
-    logging: process.env.NODE_ENV === 'development',
+    // logging: process.env.NODE_ENV === 'development',//++
+    logging: false,
     synchronize: false,
     migrationsRun: false,
-    entities: [join(__dirname, '..', 'modules', '**', '*.entity.{ts,js}')],
+    entities: [join(__dirname, '..', 'models', '**', '*.entity.{ts,js}')],
     migrations: [join(__dirname, 'migrations', '**', '*.{ts,js}')],
     subscribers: [join(__dirname, './subscribers/**/*{.ts,.js}')],
     extra: {
