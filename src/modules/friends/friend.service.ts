@@ -2,9 +2,9 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { User } from '../user/user.entity';
+import { User } from '../../models/user.entity';
 import { SearchUserQueryDto } from './dto/search-user.dto';
-import { UserElasticsearchchService } from 'src/configuars/elasticsearch/user-search.service';
+import { UserElasticsearchService } from 'src/configuars/elasticsearch/user-search.service';
 import { normalizePhoneInput } from 'src/utils/common/phone.util';
 
 type FriendUserListItem = {
@@ -30,7 +30,7 @@ export class FriendUserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepo: Repository<User>,
-    private readonly userEs: UserElasticsearchchService,
+    private readonly userEs: UserElasticsearchService,
   ) {}
 
   async findUserByTextOrPhone(
@@ -42,7 +42,8 @@ export class FriendUserService {
 
     if (!text) throw new BadRequestException('Missing search text');
 
-    const { rawDigits, vnLocal10, isExact10, isPhoneLike } = normalizePhoneInput(text);
+    const { rawDigits, vnLocal10, isExact10, isPhoneLike } =
+      normalizePhoneInput(text);
 
     let data: FriendUserListItem[] = [];
     let total = 0;
@@ -66,22 +67,6 @@ export class FriendUserService {
         phone: u.phone,
       }));
       total = count;
-
-      // (Tùy chọn) Fallback ES nếu DB rỗng
-      if (total === 0) {
-        try {
-          const es = await this.userEs.searchByPhonePaged(rawDigits, page, limit);
-          data = es.data;
-          total = es.total;
-        } catch { /* giữ rỗng */ }
-      }
-    } else if (isPhoneLike) {
-      // 📱 Phone-like nhưng không đủ 10 → ES partial theo số
-      try {
-        const es = await this.userEs.searchByPhonePaged(rawDigits, page, limit);
-        data = es.data;
-        total = es.total;
-      } catch { /* giữ rỗng */ }
     } else {
       // 🔤 Text → ES fuzzy theo name
       try {
@@ -93,7 +78,9 @@ export class FriendUserService {
           phone: it.phone ?? undefined,
         }));
         total = es.total;
-      } catch { /* giữ rỗng */ }
+      } catch {
+        /* giữ rỗng */
+      }
     }
 
     return {
