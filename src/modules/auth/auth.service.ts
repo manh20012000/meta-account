@@ -310,10 +310,10 @@ export class AuthService {
     access_token: string;
     refresh_token: string;
   }> {
-    const { refreshToken } = refreshTokenDto;
+    const { refresh_token } = refreshTokenDto;
 
     try {
-      const decoded = jwt.verify(refreshToken, this.jwtSecret) as {
+      const decoded = jwt.verify(refresh_token, this.jwtSecret) as {
         userId: string;
       };
       const user = await this.userRepository.findOne({
@@ -335,7 +335,7 @@ export class AuthService {
       return {
         user: toPublicUser(user),
         access_token,
-        refresh_token: refreshToken,
+        refresh_token: refresh_token,
       };
     } catch {
       throw new UnauthorizedException('Invalid refresh token');

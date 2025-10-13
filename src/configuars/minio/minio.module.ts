@@ -4,7 +4,7 @@ import { S3Client } from '@aws-sdk/client-s3';
 import { MinioAvatarService } from './minio.service';
 import {
   S3_CLIENT,
-  MINIO_AVATAR_BUCKET,
+  MINIO_USER_BUCKET,
   MINIO_ENDPOINT,
 } from 'src/constants/minio.constants';
 
@@ -29,7 +29,7 @@ import {
       },
     },
     {
-      provide: MINIO_AVATAR_BUCKET,
+      provide: MINIO_USER_BUCKET,
       inject: [ConfigService],
       useFactory: (cfg: ConfigService) =>
         (cfg.get('minio') as any).bucket.avatar,

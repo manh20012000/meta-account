@@ -6,7 +6,7 @@ import {
   PutObjectCommand,
   DeleteObjectCommand,
 } from '@aws-sdk/client-s3';
-import { S3_CLIENT, MINIO_AVATAR_BUCKET, MINIO_ENDPOINT } from 'src/constants/minio.constants';
+import { S3_CLIENT, MINIO_USER_BUCKET, MINIO_ENDPOINT } from 'src/constants/minio.constants';
 
 @Injectable()
 export class MinioAvatarService implements OnModuleInit {
@@ -14,7 +14,7 @@ export class MinioAvatarService implements OnModuleInit {
 
   constructor(
     @Inject(S3_CLIENT) private readonly s3: S3Client,
-    @Inject(MINIO_AVATAR_BUCKET) private readonly bucket: string,
+    @Inject(MINIO_USER_BUCKET) private readonly bucket: string,
     @Inject(MINIO_ENDPOINT) private readonly endpoint: string, // để build URL public
   ) {}
 

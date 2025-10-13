@@ -33,7 +33,7 @@ export default () => ({
     accessKeyId: process.env.MINIO_ACCESS_KEY!,
     secretAccessKey: process.env.MINIO_SECRET_KEY!,
     bucket: {
-      avatar: process.env.MINIO_BUCKET_AVATAR_PROFILE ?? 'avatar-profile',
+      avatar: process.env.MINIO_BUCKET_META_USER ?? 'bucket_meta_user',
     },
   },
   elasticsearch: {
