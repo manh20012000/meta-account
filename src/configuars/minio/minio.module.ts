@@ -1,10 +1,10 @@
 import { Global, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { S3Client } from '@aws-sdk/client-s3';
-import { MinioAvatarService } from './minio.service';
+import { MinioUserService } from './minio.service';
 import {
-  S3_CLIENT,
-  MINIO_AVATAR_BUCKET,
+  S3_CLIENT_USER,
+  MINIO_USER_BUCKET,
   MINIO_ENDPOINT,
 } from 'src/constants/minio.constants';
 
@@ -13,7 +13,7 @@ import {
   imports: [ConfigModule], // ⚠️ cần có để dùng ConfigService
   providers: [
     {
-      provide: S3_CLIENT,
+      provide: S3_CLIENT_USER,
       inject: [ConfigService],
       useFactory: (cfg: ConfigService) => {
         const m = cfg.get('minio') as any;
@@ -29,18 +29,18 @@ import {
       },
     },
     {
-      provide: MINIO_AVATAR_BUCKET,
+      provide: MINIO_USER_BUCKET,
       inject: [ConfigService],
       useFactory: (cfg: ConfigService) =>
-        (cfg.get('minio') as any).bucket.avatar,
+        (cfg.get('minio') as any).bucket.user,
     },
     {
       provide: MINIO_ENDPOINT,
       inject: [ConfigService],
       useFactory: (cfg: ConfigService) => (cfg.get('minio') as any).endpoint,
     },
-    MinioAvatarService,
+    MinioUserService,
   ],
-  exports: [MinioAvatarService],
+  exports: [MinioUserService],
 })
 export class MinioModule {}
