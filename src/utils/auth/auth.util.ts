@@ -5,9 +5,10 @@ import { ConfigService } from '@nestjs/config';
 import { RedisDataService } from 'src/configuars/redis/redis-data.service';
 
 interface UserInfo {
-  _id: string;
+  id: string;
   name: string;
   avatar?: string;
+  userId: string;
 }
 
 export async function generateAccessToken(
@@ -15,20 +16,21 @@ export async function generateAccessToken(
   configService: ConfigService,
   redisService: RedisDataService,
 ): Promise<string> {
-  if (!userInfo._id) {
+  if (!userInfo.  id) {
     throw new Error('User ID is required');
   }
   try {
     const jwtSecret = configService.get('JWT_SECRET') || 'your-secret-key';
-    const token = jwt.sign({ userId: userInfo._id }, jwtSecret, {
+    const token = jwt.sign({ userId: userInfo.userId }, jwtSecret, {
       expiresIn: '72h', // 72 hours as per original
     });
 
     // Lưu token vào Redis với prefix user:${token} và data là { id, name, avatar }
     await redisService.set(`user:${token}`, {
-      _id: userInfo._id, // Sửa: dùng 'id' thay vì '_id' để nhất quán
+      id: userInfo.id, // Sửa: dùng 'id' thay vì '_id' để nhất quán
       name: userInfo.name,
       avatar: userInfo.avatar,
+      userId: userInfo.userId,
     });
 
     return token;
@@ -43,12 +45,12 @@ export async function generateRefreshToken(
   configService: ConfigService,
   redisService: RedisDataService,
 ): Promise<string> {
-  if (!userInfo._id) {
+  if (!userInfo.userId) {  
     throw new Error('User ID is required');
   }
   try {
     const jwtSecret = configService.get('JWT_SECRET') || 'your-secret-key'; // Original uses same secret, adapt if needed
-    const token = jwt.sign({ userId: userInfo._id }, jwtSecret, {
+    const token = jwt.sign({ userId: userInfo.userId }  , jwtSecret, {
       expiresIn: '15d', // 15 days as per original
     });
 
@@ -56,11 +58,12 @@ export async function generateRefreshToken(
     // Lưu ý: Nếu access và refresh token khác nhau, key sẽ khác nên không xung đột
     const ttl = 15 * 24 * 60 * 60 * 1000; // 15 days in ms
     await redisService.set(
-      `user:${token}`,
+      `${'user:'}${token}`,
       {
-        _id: userInfo._id, // Sửa: dùng 'id' thay vì '_id' để nhất quán
+        id: userInfo.id, // Sửa: dùng 'id' thay vì '_id' để nhất quán
         name: userInfo.name,
         avatar: userInfo.avatar,
+        userId: userInfo.userId,
       },
       ttl,
     );
@@ -91,6 +94,12 @@ export function setTokensInCookies(
     sameSite: 'strict',
     secure: !isDevelopment,
   });
+}
+export async function removeAllToken(
+  token: string,
+  redisService: RedisDataService,
+) {
+  await redisService.del(`user:${token}`);
 }
 
 export async function resetDeviceState(

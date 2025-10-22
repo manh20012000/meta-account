@@ -13,7 +13,7 @@ export class RedisDataService implements OnModuleDestroy {
   async set(key: string, value: any, ttl?: number): Promise<void> {
     const stringified = JSON.stringify(value);
     if (ttl) {
-      await this.redis.set(key, stringified, 'PX', ttl);
+      await this.redis.set(key, stringified, 'EX', ttl);  //PX là milismilis
     } else {
       await this.redis.set(key, stringified);
     }

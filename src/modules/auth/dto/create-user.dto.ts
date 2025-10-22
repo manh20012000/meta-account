@@ -181,7 +181,7 @@ export class GoogleLoginDto {
 export class RefreshTokenDto {
   @IsString()
   @IsNotEmpty()
-  refreshToken!: string;
+  refresh_token!: string;
 }
 
 export class FcmTokenDto {

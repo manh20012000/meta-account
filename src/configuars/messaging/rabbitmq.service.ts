@@ -17,9 +17,9 @@ export class RabbitmqService {
       'meta_user_exchange';
   }
 
-  async publish(routingKey: string, payload: unknown) {
+  async publish(routingKey: string, payload: any) {
     this.logger.debug(`Publish ${routingKey}`);
-  
+
     return this.amqp.publish(this.exchange, routingKey, payload, {
       persistent: true, // message lưu trên disk nếu queue durable
       contentType: 'application/json',
